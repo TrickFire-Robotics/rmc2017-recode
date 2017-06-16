@@ -9,8 +9,6 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-#include <iostream>
-
 using namespace sf;
 
 int main(int argc, char **argv)
@@ -36,7 +34,6 @@ int main(int argc, char **argv)
     }
 
     if (Keyboard::isKeyPressed(Keyboard::W)) {
-      std::cout << "Hey!" << std::endl;
       ROS_DEBUG("Key W pressed");
 
       daybreak_2k17::DrivePacket msg;

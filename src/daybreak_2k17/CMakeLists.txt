@@ -212,3 +212,7 @@ target_link_libraries(driverstation ${OpenCV_LIBRARIES})
 target_link_libraries(driverstation ${SFML_LIBRARIES})
 add_dependencies(driverstation daybreak_2k17_generate_messages_cpp)
 
+add_executable(drivebase src/Drivebase.cpp)
+target_link_libraries(drivebase ${catkin_LIBRARIES})
+add_dependencies(drivebase daybreak_2k17_generate_messages_cpp)
+
