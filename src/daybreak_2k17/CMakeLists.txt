@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(daybreak_2k17)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/daybreak_2k17/cmake_modules)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -11,9 +12,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   ${OpenCV_LIBRARIES}
+  ${SFML_LIBRARIES}
   message_generation
 )
 find_package( OpenCV REQUIRED )
+find_package( SFML 2 REQUIRED network graphics window system)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -201,8 +204,11 @@ include_directories(
 # catkin_add_nosetests(test)
 
 include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(include ${SFML_INCLUDE_DIR})
 
 add_executable(driverstation src/DriverStation.cpp)
 target_link_libraries(driverstation ${catkin_LIBRARIES})
 target_link_libraries(driverstation ${OpenCV_LIBRARIES})
+target_link_libraries(driverstation ${SFML_LIBRARIES})
 add_dependencies(driverstation daybreak_2k17_generate_messages_cpp)
+
