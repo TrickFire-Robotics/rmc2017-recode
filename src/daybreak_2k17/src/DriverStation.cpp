@@ -13,6 +13,9 @@ using namespace sf;
 
 ros::Publisher drive_pub;
 
+char prevKeys[255];
+char currKeys[255];
+
 daybreak_2k17::TankDrivePacket generateDrivePacket(const float l, const float r, const bool fl, const bool rl, const bool fr, const bool rr) {
   daybreak_2k17::TankDrivePacket generated;
   generated.header = std_msgs::Header();
@@ -25,6 +28,64 @@ daybreak_2k17::TankDrivePacket generateDrivePacket(const float l, const float r,
   return generated;
 }
 
+bool keyTrig(const unsigned int key) {
+  return !prevKeys[key] && currKeys[key];
+}
+
+bool keyUntrig(const unsigned int key) {
+  return prevKeys[key] && !currKeys[key];
+}
+
+void keyInputsUpdate() {
+  for (int i = 0; i < 255; i++) {
+    prevKeys[i] = currKeys[i];
+  }
+  currKeys[Keyboard::W] = Keyboard::isKeyPressed(Keyboard::W);
+  currKeys[Keyboard::S] = Keyboard::isKeyPressed(Keyboard::S);
+  currKeys[Keyboard::A] = Keyboard::isKeyPressed(Keyboard::A);
+  currKeys[Keyboard::D] = Keyboard::isKeyPressed(Keyboard::D);
+}
+
+void driveByKeyboard() {
+  if (keyTrig(Keyboard::W)) {
+    ROS_DEBUG("Key W pressed");
+    drive_pub.publish(generateDrivePacket(1.0f, 1.0f, true, true, true, true));
+  } else if (keyUntrig(Keyboard::W)) {
+    ROS_DEBUG("Key W released");
+    drive_pub.publish(generateDrivePacket(0.0f, 0.0f, true, true, true, true));
+  }
+
+  if (keyTrig(Keyboard::S)) {
+    ROS_DEBUG("Key S pressed");
+    drive_pub.publish(generateDrivePacket(-1.0f, -1.0f, true, true, true, true));
+  } else if (keyUntrig(Keyboard::S)) {
+    ROS_DEBUG("Key S released");
+    drive_pub.publish(generateDrivePacket(0.0f, 0.0f, true, true, true, true));
+  }
+
+  if (keyTrig(Keyboard::A)) {
+    ROS_DEBUG("Key A pressed");
+    drive_pub.publish(generateDrivePacket(-1.0f, 1.0f, true, true, true, true));
+  } else if (keyUntrig(Keyboard::A)) {
+    ROS_DEBUG("Key A released");
+    drive_pub.publish(generateDrivePacket(0.0f, 0.0f, true, true, true, true));
+  }
+
+  if (keyTrig(Keyboard::D)) {
+    ROS_DEBUG("Key D pressed");
+    drive_pub.publish(generateDrivePacket(1.0f, -1.0f, true, true, true, true));
+  } else if (keyUntrig(Keyboard::D)) {
+    ROS_DEBUG("Key D released");
+    drive_pub.publish(generateDrivePacket(0.0f, 0.0f, true, true, true, true));
+  }
+}
+
+void handleInputs() {
+  keyInputsUpdate();
+
+  driveByKeyboard();
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "DriverStation");
@@ -35,6 +96,13 @@ int main(int argc, char **argv)
   ROS_DEBUG("Initializing SFML window");
 
   RenderWindow window(sf::VideoMode(800, 600), "TrickFire Driver Station");
+  window.setFramerateLimit(30);
+
+  ROS_DEBUG("Initializing key arrays (prev/curr)");
+  for (int i = 0; i < 255; i++) {
+    prevKeys[i] = false;
+    currKeys[i] = false;
+  }
 
   while (window.isOpen() && ros::ok()) {
     Event event;
@@ -45,30 +113,13 @@ int main(int argc, char **argv)
       }
     }
 
-    if (Keyboard::isKeyPressed(Keyboard::W)) {
-      ROS_DEBUG("Key W pressed");
-      drive_pub.publish(generateDrivePacket(1.0f, 1.0f, true, true, true, true));
-      ros::spinOnce();
-    }
-    if (Keyboard::isKeyPressed(Keyboard::S)) {
-      ROS_DEBUG("Key S pressed");
-      drive_pub.publish(generateDrivePacket(-1.0f, -1.0f, true, true, true, true));
-      ros::spinOnce();
-    }
-    if (Keyboard::isKeyPressed(Keyboard::A)) {
-      ROS_DEBUG("Key A pressed");
-      drive_pub.publish(generateDrivePacket(-1.0f, 1.0f, true, true, true, true));
-      ros::spinOnce();
-    }
-    if (Keyboard::isKeyPressed(Keyboard::A)) {
-      ROS_DEBUG("Key D pressed");
-      drive_pub.publish(generateDrivePacket(1.0f, -1.0f, true, true, true, true));
-      ros::spinOnce();
-    }
+    handleInputs();
 
     window.clear(Color::Black);
 
     window.display();
+
+    ros::spinOnce();
   }
 
   ROS_INFO("DS window closed");
