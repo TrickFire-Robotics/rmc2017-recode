@@ -54,7 +54,7 @@ find_package( SFML 2 REQUIRED network graphics window system)
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  DrivePacket.msg
+  TankDrivePacket.msg
   MotorOutputMsg.msg
 )
 

@@ -4,9 +4,9 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Bool.h>
 
-#include <daybreak_2k17/DrivePacket.h>
+#include <daybreak_2k17/TankDrivePacket.h>
 
-void teleop_drive_callback(const daybreak_2k17::DrivePacket::ConstPtr& msg) {
+void teleop_drive_callback(const daybreak_2k17::TankDrivePacket::ConstPtr& msg) {
   ROS_INFO("Received packet: L %f R %f", msg->l, msg->r);
 }
 

@@ -4,7 +4,7 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Bool.h>
 
-#include <daybreak_2k17/DrivePacket.h>
+#include <daybreak_2k17/TankDrivePacket.h>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "DriverStation");
   ros::NodeHandle nh;
 
-  ros::Publisher drive_pub = nh.advertise<daybreak_2k17::DrivePacket>("teleop_drive", 100);
+  ros::Publisher drive_pub = nh.advertise<daybreak_2k17::TankDrivePacket>("teleop_drive", 100);
 
   ROS_INFO("Driver station starting...");
   ROS_DEBUG("Initializing SFML window");
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     if (Keyboard::isKeyPressed(Keyboard::W)) {
       ROS_DEBUG("Key W pressed");
 
-      daybreak_2k17::DrivePacket msg;
+      daybreak_2k17::TankDrivePacket msg;
       msg.header = std_msgs::Header();
       msg.l = 1.0f;
       msg.r = 1.0f;
