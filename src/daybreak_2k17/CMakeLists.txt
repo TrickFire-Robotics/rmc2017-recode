@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(daybreak_2k17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/daybreak_2k17/cmake_modules)
+## Set to true to enable GPIO methods
+set(GPIO FALSE)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -16,7 +18,11 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 find_package( OpenCV REQUIRED )
-find_package( SFML 2 REQUIRED network graphics window system)
+find_package( SFML 2 REQUIRED network graphics window system )
+
+if(GPIO)
+  add_definitions( -DGPIO )
+endif()
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -207,6 +213,8 @@ include_directories(
 include_directories(include ${catkin_INCLUDE_DIRS})
 include_directories(include ${SFML_INCLUDE_DIR})
 
+link_directories(/usr/local/lib)
+
 add_executable(driverstation src/DriverStation.cpp)
 target_link_libraries(driverstation ${catkin_LIBRARIES})
 target_link_libraries(driverstation ${OpenCV_LIBRARIES})
@@ -219,5 +227,9 @@ add_dependencies(drivebase daybreak_2k17_generate_messages_cpp)
 
 add_executable(motorout src/MotorOutput.cpp)
 target_link_libraries(motorout ${catkin_LIBRARIES})
+if (GPIO)
+  target_link_libraries(motorout wiringPiPca9685)
+  target_link_libraries(motorout wiringPi)
+endif ()
 add_dependencies(motorout daybreak_2k17_generate_messages_cpp)
 
