@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="rqt_graph" name="Graph" type="rqt_graph"/>
+  <node pkg="rqt_console" name="Console" type="rqt_console"/>
+  <node pkg="rqt_logger_level" name="Logger_Level" type="rqt_logger_level"/>
+
+  <node pkg="daybreak_2k17" name="Driver_Station" type="driverstation"/>
+</launch>
