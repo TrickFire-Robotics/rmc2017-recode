@@ -39,5 +39,7 @@ int main(int argc, char **argv)
 
   ros::spin();
 
+  ROS_INFO("Drivebase module shutting down...");
+
   return 0;
 }

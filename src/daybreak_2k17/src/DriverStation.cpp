@@ -122,5 +122,5 @@ int main(int argc, char **argv)
     ros::spinOnce();
   }
 
-  ROS_INFO("DS window closed");
+  ROS_INFO("Driver station shutting down...");
 }

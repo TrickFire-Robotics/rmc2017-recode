@@ -14,6 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   ${OpenCV_LIBRARIES}
+  cv_bridge
+  image_transport
   ${SFML_LIBRARIES}
   message_generation
 )
@@ -232,4 +234,14 @@ if (GPIO)
   target_link_libraries(motorout wiringPi)
 endif ()
 add_dependencies(motorout daybreak_2k17_generate_messages_cpp)
+
+add_executable(camera src/Camera.cpp)
+target_link_libraries(camera ${catkin_LIBRARIES})
+target_link_libraries(camera ${OpenCV_LIBRARIES})
+add_dependencies(camera daybreak_2k17_generate_messages_cpp)
+
+add_executable(cameraviewer src/CameraViewer.cpp)
+target_link_libraries(cameraviewer ${catkin_LIBRARIES})
+target_link_libraries(cameraviewer ${OpenCV_LIBRARIES})
+add_dependencies(cameraviewer daybreak_2k17_generate_messages_cpp)
 

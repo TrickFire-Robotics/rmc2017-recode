@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "MotorOutput");
   ros::NodeHandle nh;
 
-  ROS_INFO("Motor output module starting...");
+  ROS_INFO("Motor output starting...");
   ros::Subscriber sub = nh.subscribe("motor_output", 100, motor_output_callback);
 
   #if defined(GPIO)
@@ -51,6 +51,8 @@ int main(int argc, char **argv)
   #endif
 
   ros::spin();
+
+  ROS_INFO("Motor output shutting down...");
 
   return 0;
 }
