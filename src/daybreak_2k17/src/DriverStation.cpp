@@ -6,8 +6,13 @@
 
 #include <daybreak_2k17/TankDrivePacket.h>
 
+#include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+
+#include <opencv2/opencv.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <image_transport/image_transport.h>
 
 using namespace sf;
 
@@ -15,6 +20,22 @@ ros::Publisher drive_pub;
 
 char prevKeys[255];
 char currKeys[255];
+
+sf::Mutex mut_camera;
+cv::Mat camMat;
+sf::Image camImg;
+sf::Texture camTex;
+sf::Sprite camSprite;
+
+void imageCallback(const sensor_msgs::ImageConstPtr& msg) {
+  sf::Lock lock(mut_camera);
+  cv::cvtColor(cv_bridge::toCvShare(msg, "bgr8")->image, camMat, cv::COLOR_BGR2RGBA);
+  camImg.create(camMat.cols, camMat.rows, camMat.ptr());
+  if (!camTex.loadFromImage(camImg)) {
+    ROS_ERROR("Could not convert camera image into texture.");
+  }
+  camSprite.setTexture(camTex);
+}
 
 daybreak_2k17::TankDrivePacket generateDrivePacket(const float l, const float r, const bool fl, const bool rl, const bool fr, const bool rr) {
   daybreak_2k17::TankDrivePacket generated;
@@ -93,6 +114,9 @@ int main(int argc, char **argv)
   drive_pub = nh.advertise<daybreak_2k17::TankDrivePacket>("teleop_drive", 100);
 
   ROS_INFO("Driver station starting...");
+  image_transport::ImageTransport it(nh);
+  image_transport::Subscriber sub = it.subscribe("camera/netimg", 1, imageCallback);
+
   ROS_DEBUG("Initializing SFML window");
 
   RenderWindow window(sf::VideoMode(800, 600), "TrickFire Driver Station");
@@ -116,6 +140,10 @@ int main(int argc, char **argv)
     handleInputs();
 
     window.clear(Color::Black);
+
+    mut_camera.lock();
+    window.draw(camSprite);
+    mut_camera.unlock();
 
     window.display();
 
