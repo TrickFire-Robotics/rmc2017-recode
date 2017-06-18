@@ -22,9 +22,9 @@ int main(int argc, char **argv)
 
   image_transport::ImageTransport it(nh);
 
-  ROS_INFO("Starting camera viewer...");
+  ROS_INFO("Camera viewer starting...");
 
-  image_transport::Subscriber sub = it.subscribe("camera/rawimg", 1, imageCallback);
+  image_transport::Subscriber sub = it.subscribe("camera/netimg", 1, imageCallback);
 
   ros::spin();
 

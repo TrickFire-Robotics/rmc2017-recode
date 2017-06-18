@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 
   ros::spin();
 
-  ROS_INFO("Motor output shutting down...");
+  ROS_INFO("Motor output stopping...");
 
   return 0;
 }

@@ -122,5 +122,5 @@ int main(int argc, char **argv)
     ros::spinOnce();
   }
 
-  ROS_INFO("Driver station shutting down...");
+  ROS_INFO("Driver station stopping...");
 }

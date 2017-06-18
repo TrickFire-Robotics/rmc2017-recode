@@ -6,6 +6,7 @@
   <node pkg="daybreak_2k17" name="Motor_Out" type="motorout"/>
 
   <node pkg="daybreak_2k17" name="Camera" type="camera"/>
+  <node pkg="daybreak_2k17" name="Cam2Net" type="camtonet"/>
 
   <node pkg="daybreak_2k17" name="Camera_Viewer" type="cameraviewer"/>
 </launch>

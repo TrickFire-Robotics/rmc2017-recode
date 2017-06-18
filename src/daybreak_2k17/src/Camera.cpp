@@ -32,5 +32,5 @@ int main(int argc, char **argv)
     }
   }
 
-  ROS_INFO("Camera module shutting down...");
+  ROS_INFO("Camera module stopping...");
 }

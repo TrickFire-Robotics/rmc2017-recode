@@ -245,3 +245,8 @@ target_link_libraries(cameraviewer ${catkin_LIBRARIES})
 target_link_libraries(cameraviewer ${OpenCV_LIBRARIES})
 add_dependencies(cameraviewer daybreak_2k17_generate_messages_cpp)
 
+add_executable(camtonet src/CameraToNetwork.cpp)
+target_link_libraries(camtonet ${catkin_LIBRARIES})
+target_link_libraries(camtonet ${OpenCV_LIBRARIES})
+add_dependencies(camtonet daybreak_2k17_generate_messages_cpp)
+
