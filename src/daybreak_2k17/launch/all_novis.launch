@@ -2,4 +2,6 @@
   <node pkg="daybreak_2k17" name="driverstation" type="driverstation"/>
 
   <node pkg="daybreak_2k17" name="drivebase" type="drivebase"/>
+
+  <node pkg="daybreak_2k17" name="Motor_Out" type="motorout"/>
 </launch>

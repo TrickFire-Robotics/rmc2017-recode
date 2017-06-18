@@ -122,6 +122,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 # include
+  ${SOURCE_DIR}
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -215,4 +216,8 @@ add_dependencies(driverstation daybreak_2k17_generate_messages_cpp)
 add_executable(drivebase src/Drivebase.cpp)
 target_link_libraries(drivebase ${catkin_LIBRARIES})
 add_dependencies(drivebase daybreak_2k17_generate_messages_cpp)
+
+add_executable(motorout src/MotorOutput.cpp)
+target_link_libraries(motorout ${catkin_LIBRARIES})
+add_dependencies(motorout daybreak_2k17_generate_messages_cpp)
 
