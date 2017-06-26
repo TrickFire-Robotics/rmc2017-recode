@@ -18,8 +18,8 @@ using namespace sf;
 
 ros::Publisher drive_pub;
 
-char prevKeys[255];
-char currKeys[255];
+bool prevKeys[255];
+bool currKeys[255];
 
 sf::Mutex mut_camera;
 cv::Mat camMat;
