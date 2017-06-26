@@ -17,7 +17,7 @@ int pwmFD;
 #endif
 
 unsigned int map_to_motor(const float val) {
-  return (unsigned int)((val + 1.0f) * 0.5f * 4095);
+  return (unsigned int)(122.85 * val + 322.125);
 }
 
 void motor_output_callback(const daybreak_2k17::MotorOutputMsg::ConstPtr& msg) {
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
       ROS_FATAL("Error setting up PCA9685 connection! Node will continue, but no physical outputs will be sent by this node.");
     } else {
       pca9685PWMReset(pwmFD);
-      pwmWrite(316, map_to_motor(0.5f));
+      pwmWrite(316, map_to_motor(0.0f));
       ROS_INFO("PCA9685 connection established, all outputs set to neutral (0.0)");
     }
 
