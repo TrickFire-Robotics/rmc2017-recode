@@ -8,6 +8,7 @@
 
 #include <daybreak_2k17/TankDriveMsg.h>
 #include <daybreak_2k17/BinSlideMsg.h>
+#include <daybreak_2k17/BeltSpinMsg.h>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -22,10 +23,11 @@ using namespace std;
 
 ros::Publisher drive_pub;
 ros::Publisher bin_slide_pub;
+ros::Publisher belt_spin_pub;
 
 bool prevKeys[255];
 bool currKeys[255];
-const vector<Keyboard::Key> trackedKeys = { Keyboard::W, Keyboard::A, Keyboard::S, Keyboard::D, Keyboard::U, Keyboard::J };
+const vector<Keyboard::Key> trackedKeys = { Keyboard::W, Keyboard::A, Keyboard::S, Keyboard::D, Keyboard::U, Keyboard::J, Keyboard::M };
 
 double prevJoyL, prevJoyR;
 double currJoyL, currJoyR;
@@ -60,6 +62,13 @@ daybreak_2k17::TankDriveMsg generateDriveMsg(const float l, const float r, const
 
 daybreak_2k17::BinSlideMsg generateBinSlideMsg(const float movement) {
   daybreak_2k17::BinSlideMsg generated;
+  generated.header = std_msgs::Header();
+  generated.movement = movement;
+  return generated;
+}
+
+daybreak_2k17::BeltSpinMsg generateBeltSpinMsg(const float movement) {
+  daybreak_2k17::BeltSpinMsg generated;
   generated.header = std_msgs::Header();
   generated.movement = movement;
   return generated;
@@ -162,6 +171,14 @@ void operateByKeyboard() {
     ROS_DEBUG("Key J released");
     bin_slide_pub.publish(generateBinSlideMsg(0.0f));
   }
+
+  if (keyTrig(Keyboard::M)) {
+    ROS_DEBUG("Key M pressed");
+    belt_spin_pub.publish(generateBeltSpinMsg(1.0f));
+  } else if (keyUntrig(Keyboard::M)) {
+    ROS_DEBUG("Key M released");
+    belt_spin_pub.publish(generateBeltSpinMsg(0.0f));
+  }
 }
 
 void handleInputs() {
@@ -183,6 +200,7 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
   drive_pub = nh.advertise<daybreak_2k17::TankDriveMsg>("teleop_drive", 100);
   bin_slide_pub = nh.advertise<daybreak_2k17::BinSlideMsg>("bin_slide", 100);
+  belt_spin_pub = nh.advertise<daybreak_2k17::BeltSpinMsg>("belt_spin", 100);
 
   ROS_INFO("Driver station starting...");
   image_transport::ImageTransport it(nh);

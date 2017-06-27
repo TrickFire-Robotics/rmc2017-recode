@@ -8,5 +8,6 @@
 #define DRIVE_RR 3
 
 #define BIN_SLIDE 9
+#define BELT_SPIN 10
 
 #endif

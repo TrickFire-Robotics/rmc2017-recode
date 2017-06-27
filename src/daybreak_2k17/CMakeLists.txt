@@ -63,6 +63,7 @@ endif()
 add_message_files(
   FILES
   BinSlideMsg.msg
+  BeltSpinMsg.msg
   MotorOutputMsg.msg
   TankDriveMsg.msg
 )

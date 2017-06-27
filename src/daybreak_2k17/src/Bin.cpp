@@ -6,6 +6,7 @@
 #include <daybreak_2k17/PhysicalConstants.h>
 
 #include <daybreak_2k17/BinSlideMsg.h>
+#include <daybreak_2k17/BeltSpinMsg.h>
 #include <daybreak_2k17/MotorOutputMsg.h>
 
 ros::Publisher motor_pub;
@@ -23,6 +24,11 @@ void bin_slide_callback(const daybreak_2k17::BinSlideMsg::ConstPtr& msg) {
   motor_pub.publish(create_motor_msg(BIN_SLIDE, msg->movement));
 }
 
+void belt_spin_callback(const daybreak_2k17::BeltSpinMsg::ConstPtr& msg) {
+  ROS_INFO("Received belt spin packet: speed %f", msg->movement);
+  motor_pub.publish(create_motor_msg(BELT_SPIN, msg->movement));
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "Bin");
@@ -31,7 +37,8 @@ int main(int argc, char **argv)
   motor_pub = nh.advertise<daybreak_2k17::MotorOutputMsg>("motor_output", 100);
 
   ROS_INFO("Bin module starting...");
-  ros::Subscriber sub = nh.subscribe("bin_slide", 100, bin_slide_callback);
+  ros::Subscriber bin_slide_sub = nh.subscribe("bin_slide", 100, bin_slide_callback);
+  ros::Subscriber belt_spin_sub = nh.subscribe("belt_spin", 100, belt_spin_callback);
 
   ros::spin();
 
