@@ -4,6 +4,8 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Bool.h>
 
+#include <vector>
+
 #include <daybreak_2k17/TankDrivePacket.h>
 
 #include <SFML/System.hpp>
@@ -15,11 +17,16 @@
 #include <image_transport/image_transport.h>
 
 using namespace sf;
+using namespace std;
 
 ros::Publisher drive_pub;
 
 bool prevKeys[255];
 bool currKeys[255];
+const vector<Keyboard::Key> trackedKeys = { Keyboard::W, Keyboard::A, Keyboard::S, Keyboard::D };
+
+double prevJoyL, prevJoyR;
+double currJoyL, currJoyR;
 
 sf::Mutex mut_camera;
 cv::Mat camMat;
@@ -58,16 +65,34 @@ bool keyUntrig(const unsigned int key) {
 }
 
 void keyInputsUpdate() {
+  // Update the previous key states to match what we had last iteration
   for (int i = 0; i < 255; i++) {
     prevKeys[i] = currKeys[i];
   }
-  currKeys[Keyboard::W] = Keyboard::isKeyPressed(Keyboard::W);
-  currKeys[Keyboard::S] = Keyboard::isKeyPressed(Keyboard::S);
-  currKeys[Keyboard::A] = Keyboard::isKeyPressed(Keyboard::A);
-  currKeys[Keyboard::D] = Keyboard::isKeyPressed(Keyboard::D);
+  // Update all the tracked keys
+  for (vector<Keyboard::Key>::const_iterator it = trackedKeys.begin(); it != trackedKeys.end(); it++) {
+    currKeys[*it] = Keyboard::isKeyPressed(*it);
+  }
+}
+
+void joyInputsUpdate() {
+  if (!Joystick::isConnected(0)) {
+//  if (!Joystick::isConnected(0) || !Joystick::isConnected(1)) {
+    ROS_DEBUG("Not enough joysticks connected, skipping joyInputsUpdate()");
+    return;
+  }
+
+  prevJoyL = currJoyL;
+  prevJoyR = currJoyR;
+
+  currJoyL = Joystick::getAxisPosition(0, Joystick::Y);
+//  currJoyR = Joystick::getAxisPosition(1, Joystick::Y);
+  currJoyR = Joystick::getAxisPosition(0, Joystick::Y);
 }
 
 void driveByKeyboard() {
+  ROS_DEBUG("Driving by keyboard");
+
   if (keyTrig(Keyboard::W)) {
     ROS_DEBUG("Key W pressed");
     drive_pub.publish(generateDrivePacket(1.0f, 1.0f, true, true, true, true));
@@ -101,10 +126,25 @@ void driveByKeyboard() {
   }
 }
 
+void driveByJoystick() {
+  ROS_DEBUG("Driving by joystick");
+
+  if (abs(currJoyL - prevJoyL) > 0.05 || abs(currJoyR - prevJoyR) > 0.05) {
+    ROS_DEBUG("Sending joystick drive update (deltas > threshold)");
+    drive_pub.publish(generateDrivePacket(currJoyL, currJoyR, true, true, true, true));
+  }
+}
+
 void handleInputs() {
   keyInputsUpdate();
+  joyInputsUpdate();
 
-  driveByKeyboard();
+  if (Joystick::isConnected(0)) {
+//  if (Joystick::isConnected(0) && Joystick::isConnected(1)) {
+    driveByJoystick();
+  } else {
+    driveByKeyboard();
+  }
 }
 
 int main(int argc, char **argv)
