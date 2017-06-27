@@ -7,4 +7,6 @@
 #define DRIVE_RL 2
 #define DRIVE_RR 3
 
+#define BIN_SLIDE 9
+
 #endif

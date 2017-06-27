@@ -62,8 +62,9 @@ endif()
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  TankDriveMsg.msg
+  BinSlideMsg.msg
   MotorOutputMsg.msg
+  TankDriveMsg.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -226,6 +227,10 @@ add_dependencies(driverstation daybreak_2k17_generate_messages_cpp)
 add_executable(drivebase src/Drivebase.cpp)
 target_link_libraries(drivebase ${catkin_LIBRARIES})
 add_dependencies(drivebase daybreak_2k17_generate_messages_cpp)
+
+add_executable(bin src/Bin.cpp)
+target_link_libraries(bin ${catkin_LIBRARIES})
+add_dependencies(bin daybreak_2k17_generate_messages_cpp)
 
 add_executable(motorout src/MotorOutput.cpp)
 target_link_libraries(motorout ${catkin_LIBRARIES})

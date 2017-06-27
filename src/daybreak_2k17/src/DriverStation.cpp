@@ -6,7 +6,8 @@
 
 #include <vector>
 
-#include <daybreak_2k17/TankDrivePacket.h>
+#include <daybreak_2k17/TankDriveMsg.h>
+#include <daybreak_2k17/BinSlideMsg.h>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -20,10 +21,11 @@ using namespace sf;
 using namespace std;
 
 ros::Publisher drive_pub;
+ros::Publisher bin_slide_pub;
 
 bool prevKeys[255];
 bool currKeys[255];
-const vector<Keyboard::Key> trackedKeys = { Keyboard::W, Keyboard::A, Keyboard::S, Keyboard::D };
+const vector<Keyboard::Key> trackedKeys = { Keyboard::W, Keyboard::A, Keyboard::S, Keyboard::D, Keyboard::U, Keyboard::J };
 
 double prevJoyL, prevJoyR;
 double currJoyL, currJoyR;
@@ -44,8 +46,8 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg) {
   camSprite.setTexture(camTex);
 }
 
-daybreak_2k17::TankDrivePacket generateDrivePacket(const float l, const float r, const bool fl, const bool rl, const bool fr, const bool rr) {
-  daybreak_2k17::TankDrivePacket generated;
+daybreak_2k17::TankDriveMsg generateDriveMsg(const float l, const float r, const bool fl, const bool rl, const bool fr, const bool rr) {
+  daybreak_2k17::TankDriveMsg generated;
   generated.header = std_msgs::Header();
   generated.l = l;
   generated.r = r;
@@ -53,6 +55,13 @@ daybreak_2k17::TankDrivePacket generateDrivePacket(const float l, const float r,
   generated.rl = rl;
   generated.fr = fr;
   generated.rr = rr;
+  return generated;
+}
+
+daybreak_2k17::BinSlideMsg generateBinSlideMsg(const float movement) {
+  daybreak_2k17::BinSlideMsg generated;
+  generated.header = std_msgs::Header();
+  generated.movement = movement;
   return generated;
 }
 
@@ -95,34 +104,34 @@ void driveByKeyboard() {
 
   if (keyTrig(Keyboard::W)) {
     ROS_DEBUG("Key W pressed");
-    drive_pub.publish(generateDrivePacket(1.0f, 1.0f, true, true, true, true));
+    drive_pub.publish(generateDriveMsg(1.0f, 1.0f, true, true, true, true));
   } else if (keyUntrig(Keyboard::W)) {
     ROS_DEBUG("Key W released");
-    drive_pub.publish(generateDrivePacket(0.0f, 0.0f, true, true, true, true));
+    drive_pub.publish(generateDriveMsg(0.0f, 0.0f, true, true, true, true));
   }
 
   if (keyTrig(Keyboard::S)) {
     ROS_DEBUG("Key S pressed");
-    drive_pub.publish(generateDrivePacket(-1.0f, -1.0f, true, true, true, true));
+    drive_pub.publish(generateDriveMsg(-1.0f, -1.0f, true, true, true, true));
   } else if (keyUntrig(Keyboard::S)) {
     ROS_DEBUG("Key S released");
-    drive_pub.publish(generateDrivePacket(0.0f, 0.0f, true, true, true, true));
+    drive_pub.publish(generateDriveMsg(0.0f, 0.0f, true, true, true, true));
   }
 
   if (keyTrig(Keyboard::A)) {
     ROS_DEBUG("Key A pressed");
-    drive_pub.publish(generateDrivePacket(-1.0f, 1.0f, true, true, true, true));
+    drive_pub.publish(generateDriveMsg(-1.0f, 1.0f, true, true, true, true));
   } else if (keyUntrig(Keyboard::A)) {
     ROS_DEBUG("Key A released");
-    drive_pub.publish(generateDrivePacket(0.0f, 0.0f, true, true, true, true));
+    drive_pub.publish(generateDriveMsg(0.0f, 0.0f, true, true, true, true));
   }
 
   if (keyTrig(Keyboard::D)) {
     ROS_DEBUG("Key D pressed");
-    drive_pub.publish(generateDrivePacket(1.0f, -1.0f, true, true, true, true));
+    drive_pub.publish(generateDriveMsg(1.0f, -1.0f, true, true, true, true));
   } else if (keyUntrig(Keyboard::D)) {
     ROS_DEBUG("Key D released");
-    drive_pub.publish(generateDrivePacket(0.0f, 0.0f, true, true, true, true));
+    drive_pub.publish(generateDriveMsg(0.0f, 0.0f, true, true, true, true));
   }
 }
 
@@ -131,7 +140,27 @@ void driveByJoystick() {
 
   if (abs(currJoyL - prevJoyL) > 0.05 || abs(currJoyR - prevJoyR) > 0.05) {
     ROS_DEBUG("Sending joystick drive update (deltas > threshold)");
-    drive_pub.publish(generateDrivePacket(currJoyL, currJoyR, true, true, true, true));
+    drive_pub.publish(generateDriveMsg(currJoyL, currJoyR, true, true, true, true));
+  }
+}
+
+void operateByKeyboard() {
+  ROS_DEBUG("Operating by keyboard");
+
+  if (keyTrig(Keyboard::U)) {
+    ROS_DEBUG("Key U pressed");
+    bin_slide_pub.publish(generateBinSlideMsg(1.0f));
+  } else if (keyUntrig(Keyboard::U)) {
+    ROS_DEBUG("Key U released");
+    bin_slide_pub.publish(generateBinSlideMsg(0.0f));
+  }
+
+  if (keyTrig(Keyboard::J)) {
+    ROS_DEBUG("Key J pressed");
+    bin_slide_pub.publish(generateBinSlideMsg(-1.0f));
+  } else if (keyUntrig(Keyboard::J)) {
+    ROS_DEBUG("Key J released");
+    bin_slide_pub.publish(generateBinSlideMsg(0.0f));
   }
 }
 
@@ -144,6 +173,7 @@ void handleInputs() {
     driveByJoystick();
   } else {
     driveByKeyboard();
+    operateByKeyboard();
   }
 }
 
@@ -151,7 +181,8 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "DriverStation");
   ros::NodeHandle nh;
-  drive_pub = nh.advertise<daybreak_2k17::TankDrivePacket>("teleop_drive", 100);
+  drive_pub = nh.advertise<daybreak_2k17::TankDriveMsg>("teleop_drive", 100);
+  bin_slide_pub = nh.advertise<daybreak_2k17::BinSlideMsg>("bin_slide", 100);
 
   ROS_INFO("Driver station starting...");
   image_transport::ImageTransport it(nh);
