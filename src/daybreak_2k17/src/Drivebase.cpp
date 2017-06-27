@@ -7,7 +7,7 @@
 
 #include <daybreak_2k17/PhysicalConstants.h>
 
-#include <daybreak_2k17/TankDrivePacket.h>
+#include <daybreak_2k17/TankDriveMsg.h>
 #include <daybreak_2k17/MotorOutputMsg.h>
 
 ros::Publisher motor_pub;
@@ -20,7 +20,7 @@ daybreak_2k17::MotorOutputMsg create_motor_msg(const unsigned int motorId, const
   return generated;
 }
 
-void teleop_drive_callback(const daybreak_2k17::TankDrivePacket::ConstPtr& msg) {
+void teleop_drive_callback(const daybreak_2k17::TankDriveMsg::ConstPtr& msg) {
   ROS_INFO("Received packet: L %f R %f", msg->l, msg->r);
   motor_pub.publish(create_motor_msg(DRIVE_FL, msg->fl ? msg->l : 0.0f));
   motor_pub.publish(create_motor_msg(DRIVE_RL, msg->rl ? msg->l : 0.0f));
