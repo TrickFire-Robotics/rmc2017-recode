@@ -34,11 +34,11 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "Bin");
   ros::NodeHandle nh;
 
-  motor_pub = nh.advertise<daybreak_2k17::MotorOutputMsg>("motor_output", 100);
+  motor_pub = nh.advertise<daybreak_2k17::MotorOutputMsg>("motor_output", 1);
 
   ROS_INFO("Bin module starting...");
-  ros::Subscriber bin_slide_sub = nh.subscribe("bin_slide", 100, bin_slide_callback);
-  ros::Subscriber belt_spin_sub = nh.subscribe("belt_spin", 100, belt_spin_callback);
+  ros::Subscriber bin_slide_sub = nh.subscribe("bin_slide", 1, bin_slide_callback);
+  ros::Subscriber belt_spin_sub = nh.subscribe("belt_spin", 1, belt_spin_callback);
 
   ros::spin();
 

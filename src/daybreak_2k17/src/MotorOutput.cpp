@@ -33,7 +33,8 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
 
   ROS_INFO("Motor output starting...");
-  ros::Subscriber sub = nh.subscribe("motor_output", 100, motor_output_callback);
+  // 10 is the number of motor outputs we have, this should be updated based on the real number if it changes
+  ros::Subscriber sub = nh.subscribe("motor_output", 10, motor_output_callback);
 
   #if defined(GPIO)
     ROS_INFO("GPIO is enabled, setting up PCA9685 connection...");

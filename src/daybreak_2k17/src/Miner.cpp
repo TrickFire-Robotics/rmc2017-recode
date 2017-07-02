@@ -28,10 +28,10 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "Miner");
   ros::NodeHandle nh;
 
-  motor_pub = nh.advertise<daybreak_2k17::MotorOutputMsg>("motor_output", 100);
+  motor_pub = nh.advertise<daybreak_2k17::MotorOutputMsg>("motor_output", 1);
 
   ROS_INFO("Miner module starting...");
-  ros::Subscriber miner_spin_sub = nh.subscribe("miner_spin", 100, miner_spin_callback);
+  ros::Subscriber miner_spin_sub = nh.subscribe("miner_spin", 1, miner_spin_callback);
 
   ros::spin();
 

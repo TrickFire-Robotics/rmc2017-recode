@@ -29,10 +29,10 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "Lift");
   ros::NodeHandle nh;
 
-  motor_pub = nh.advertise<daybreak_2k17::MotorOutputMsg>("motor_output", 100);
+  motor_pub = nh.advertise<daybreak_2k17::MotorOutputMsg>("motor_output", 1);
 
   ROS_INFO("Lift module starting...");
-  ros::Subscriber lift_move_sub = nh.subscribe("lift_move", 100, lift_move_callback);
+  ros::Subscriber lift_move_sub = nh.subscribe("lift_move", 1, lift_move_callback);
 
   ros::spin();
 

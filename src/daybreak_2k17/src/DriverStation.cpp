@@ -237,10 +237,10 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "DriverStation");
   ros::NodeHandle nh;
-  drive_pub = nh.advertise<daybreak_2k17::TankDriveMsg>("teleop_drive", 100);
-  bin_slide_pub = nh.advertise<daybreak_2k17::BinSlideMsg>("bin_slide", 100);
-  belt_spin_pub = nh.advertise<daybreak_2k17::BeltSpinMsg>("belt_spin", 100);
-  miner_spin_pub = nh.advertise<daybreak_2k17::MinerSpinMsg>("miner_spin", 100);
+  drive_pub = nh.advertise<daybreak_2k17::TankDriveMsg>("teleop_drive", 1);
+  bin_slide_pub = nh.advertise<daybreak_2k17::BinSlideMsg>("bin_slide", 1);
+  belt_spin_pub = nh.advertise<daybreak_2k17::BeltSpinMsg>("belt_spin", 1);
+  miner_spin_pub = nh.advertise<daybreak_2k17::MinerSpinMsg>("miner_spin", 1);
 
   ROS_INFO("Driver station starting...");
   image_transport::ImageTransport it(nh);

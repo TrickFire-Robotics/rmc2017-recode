@@ -32,10 +32,10 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "Drivebase");
   ros::NodeHandle nh;
-  motor_pub = nh.advertise<daybreak_2k17::MotorOutputMsg>("motor_output", 100);
+  motor_pub = nh.advertise<daybreak_2k17::MotorOutputMsg>("motor_output", 1);
 
   ROS_INFO("Drivebase module starting...");
-  ros::Subscriber sub = nh.subscribe("teleop_drive", 100, teleop_drive_callback);
+  ros::Subscriber sub = nh.subscribe("teleop_drive", 1, teleop_drive_callback);
 
   ros::spin();
 
