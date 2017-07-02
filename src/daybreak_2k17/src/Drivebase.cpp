@@ -14,7 +14,6 @@ ros::Publisher motor_pub;
 
 daybreak_2k17::MotorOutputMsg create_motor_msg(const unsigned int motorId, const float val) {
   daybreak_2k17::MotorOutputMsg generated;
-  generated.header = std_msgs::Header();
   generated.motorId = motorId;
   generated.val = val;
   return generated;

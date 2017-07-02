@@ -53,7 +53,6 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg) {
 
 daybreak_2k17::TankDriveMsg generateDriveMsg(const float l, const float r, const bool fl, const bool rl, const bool fr, const bool rr) {
   daybreak_2k17::TankDriveMsg generated;
-  generated.header = std_msgs::Header();
   generated.l = l;
   generated.r = r;
   generated.fl = fl;
@@ -65,28 +64,24 @@ daybreak_2k17::TankDriveMsg generateDriveMsg(const float l, const float r, const
 
 daybreak_2k17::BinSlideMsg generateBinSlideMsg(const float movement) {
   daybreak_2k17::BinSlideMsg generated;
-  generated.header = std_msgs::Header();
   generated.movement = movement;
   return generated;
 }
 
 daybreak_2k17::BeltSpinMsg generateBeltSpinMsg(const float movement) {
   daybreak_2k17::BeltSpinMsg generated;
-  generated.header = std_msgs::Header();
   generated.movement = movement;
   return generated;
 }
 
 daybreak_2k17::MinerSpinMsg generateMinerSpinMsg(const float spin) {
   daybreak_2k17::MinerSpinMsg generated;
-  generated.header = std_msgs::Header();
   generated.spin = spin;
   return generated;
 }
 
 daybreak_2k17::LiftMoveMsg generateLiftMoveMsg(const bool upperStage, const float leftMove, const float rightMove) {
   daybreak_2k17::LiftMoveMsg generated;
-  generated.header = std_msgs::Header();
   generated.upperStage = upperStage;
   generated.leftMove = leftMove;
   generated.rightMove = rightMove;
