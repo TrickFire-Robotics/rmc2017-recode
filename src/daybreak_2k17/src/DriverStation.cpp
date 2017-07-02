@@ -9,6 +9,7 @@
 #include <daybreak_2k17/TankDriveMsg.h>
 #include <daybreak_2k17/BinSlideMsg.h>
 #include <daybreak_2k17/BeltSpinMsg.h>
+#include <daybreak_2k17/MinerSpinMsg.h>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -24,10 +25,11 @@ using namespace std;
 ros::Publisher drive_pub;
 ros::Publisher bin_slide_pub;
 ros::Publisher belt_spin_pub;
+ros::Publisher miner_spin_pub;
 
 bool prevKeys[255];
 bool currKeys[255];
-const vector<Keyboard::Key> trackedKeys = { Keyboard::W, Keyboard::A, Keyboard::S, Keyboard::D, Keyboard::U, Keyboard::J, Keyboard::M };
+const vector<Keyboard::Key> trackedKeys = { Keyboard::W, Keyboard::A, Keyboard::S, Keyboard::D, Keyboard::U, Keyboard::J, Keyboard::M, Keyboard::I, Keyboard::K };
 
 double prevJoyL, prevJoyR;
 double currJoyL, currJoyR;
@@ -71,6 +73,13 @@ daybreak_2k17::BeltSpinMsg generateBeltSpinMsg(const float movement) {
   daybreak_2k17::BeltSpinMsg generated;
   generated.header = std_msgs::Header();
   generated.movement = movement;
+  return generated;
+}
+
+daybreak_2k17::MinerSpinMsg generateMinerSpinMsg(const float spin) {
+  daybreak_2k17::MinerSpinMsg generated;
+  generated.header = std_msgs::Header();
+  generated.spin = spin;
   return generated;
 }
 
@@ -179,6 +188,22 @@ void operateByKeyboard() {
     ROS_DEBUG("Key M released");
     belt_spin_pub.publish(generateBeltSpinMsg(0.0f));
   }
+
+  if (keyTrig(Keyboard::I)) {
+    ROS_DEBUG("Key I pressed");
+    miner_spin_pub.publish(generateMinerSpinMsg(1.0f));
+  } else if (keyUntrig(Keyboard::I)) {
+    ROS_DEBUG("Key I released");
+    miner_spin_pub.publish(generateMinerSpinMsg(0.0f));
+  }
+
+  if (keyTrig(Keyboard::K)) {
+    ROS_DEBUG("Key K pressed");
+    miner_spin_pub.publish(generateMinerSpinMsg(-1.0f));
+  } else if (keyUntrig(Keyboard::K)) {
+    ROS_DEBUG("Key K released");
+    miner_spin_pub.publish(generateMinerSpinMsg(0.0f));
+  }
 }
 
 void handleInputs() {
@@ -201,6 +226,7 @@ int main(int argc, char **argv)
   drive_pub = nh.advertise<daybreak_2k17::TankDriveMsg>("teleop_drive", 100);
   bin_slide_pub = nh.advertise<daybreak_2k17::BinSlideMsg>("bin_slide", 100);
   belt_spin_pub = nh.advertise<daybreak_2k17::BeltSpinMsg>("belt_spin", 100);
+  miner_spin_pub = nh.advertise<daybreak_2k17::MinerSpinMsg>("miner_spin", 100);
 
   ROS_INFO("Driver station starting...");
   image_transport::ImageTransport it(nh);

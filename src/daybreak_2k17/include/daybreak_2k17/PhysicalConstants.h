@@ -6,6 +6,7 @@
 #define DRIVE_FR 1
 #define DRIVE_RL 2
 #define DRIVE_RR 3
+#define MINER_SPIN 4
 
 #define BIN_SLIDE 9
 #define BELT_SPIN 10
