@@ -62,6 +62,7 @@ endif()
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  LiftMoveMsg.msg
   MinerSpinMsg.msg
   BinSlideMsg.msg
   BeltSpinMsg.msg
@@ -237,6 +238,10 @@ add_dependencies(bin daybreak_2k17_generate_messages_cpp)
 add_executable(miner src/Miner.cpp)
 target_link_libraries(miner ${catkin_LIBRARIES})
 add_dependencies(miner daybreak_2k17_generate_messages_cpp)
+
+add_executable(lift src/Lift.cpp)
+target_link_libraries(lift ${catkin_LIBRARIES})
+add_dependencies(lift daybreak_2k17_generate_messages_cpp)
 
 add_executable(motorout src/MotorOutput.cpp)
 target_link_libraries(motorout ${catkin_LIBRARIES})

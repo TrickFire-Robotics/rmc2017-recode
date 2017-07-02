@@ -10,6 +10,7 @@
 #include <daybreak_2k17/BinSlideMsg.h>
 #include <daybreak_2k17/BeltSpinMsg.h>
 #include <daybreak_2k17/MinerSpinMsg.h>
+#include <daybreak_2k17/LiftMoveMsg.h>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -83,12 +84,25 @@ daybreak_2k17::MinerSpinMsg generateMinerSpinMsg(const float spin) {
   return generated;
 }
 
+daybreak_2k17::LiftMoveMsg generateLiftMoveMsg(const bool upperStage, const float leftMove, const float rightMove) {
+  daybreak_2k17::LiftMoveMsg generated;
+  generated.header = std_msgs::Header();
+  generated.upperStage = upperStage;
+  generated.leftMove = leftMove;
+  generated.rightMove = rightMove;
+  return generated;
+}
+
 bool keyTrig(const unsigned int key) {
   return !prevKeys[key] && currKeys[key];
 }
 
 bool keyUntrig(const unsigned int key) {
   return prevKeys[key] && !currKeys[key];
+}
+
+bool keyChange(const unsigned int key) {
+  return prevKeys[key] != currKeys[key];
 }
 
 void keyInputsUpdate() {

@@ -8,6 +8,7 @@
   <node pkg="daybreak_2k17" name="Drivebase" type="drivebase"/>
   <node pkg="daybreak_2k17" name="Bin" type="bin"/>
   <node pkg="daybreak_2k17" name="Miner" type="miner"/>
+  <node pkg="daybreak_2k17" name="Lift" type="lift"/>
 
   <node pkg="daybreak_2k17" name="Motor_Out" type="motorout"/>
 
