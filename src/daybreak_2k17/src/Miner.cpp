@@ -19,7 +19,7 @@ daybreak_2k17::MotorOutputMsg create_motor_msg(const unsigned int motorId, const
 }
 
 void miner_spin_callback(const daybreak_2k17::MinerSpinMsg::ConstPtr& msg) {
-  ROS_INFO("Received miner spin packet: speed %f", msg->spin);
+  ROS_INFO("Received miner spin message: speed %f", msg->spin);
   motor_pub.publish(create_motor_msg(MINER_SPIN, msg->spin));
 }
 

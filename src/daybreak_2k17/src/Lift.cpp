@@ -19,7 +19,7 @@ daybreak_2k17::MotorOutputMsg create_motor_msg(const unsigned int motorId, const
 }
 
 void lift_move_callback(const daybreak_2k17::LiftMoveMsg::ConstPtr& msg) {
-  ROS_INFO("Received lift move packet: stage %d, L %f R %f", msg->upperStage ? 2 : 1, msg->leftMove, msg->rightMove);
+  ROS_INFO("Received lift move message: stage %d, L %f R %f", msg->upperStage ? 2 : 1, msg->leftMove, msg->rightMove);
   motor_pub.publish(create_motor_msg(msg->upperStage ? LIFT_L2 : LIFT_L1, msg->leftMove));
   motor_pub.publish(create_motor_msg(msg->upperStage ? LIFT_R2 : LIFT_R1, msg->rightMove));
 }

@@ -21,7 +21,7 @@ unsigned int map_to_motor(const float val) {
 }
 
 void motor_output_callback(const daybreak_2k17::MotorOutputMsg::ConstPtr& msg) {
-  ROS_DEBUG("Received motor output: motor %d to val %f", msg->motorId, msg->val);
+  ROS_DEBUG("Received motor output message: motor %d to val %f", msg->motorId, msg->val);
 #if defined(GPIO)
   pwmWrite(300 + msg->motorId, map_to_motor(msg->val));
 #endif

@@ -21,7 +21,7 @@ daybreak_2k17::MotorOutputMsg create_motor_msg(const unsigned int motorId, const
 }
 
 void teleop_drive_callback(const daybreak_2k17::TankDriveMsg::ConstPtr& msg) {
-  ROS_INFO("Received packet: L %f R %f", msg->l, msg->r);
+  ROS_INFO("Received teleop drive message: L %f R %f", msg->l, msg->r);
   motor_pub.publish(create_motor_msg(DRIVE_FL, msg->fl ? msg->l : 0.0f));
   motor_pub.publish(create_motor_msg(DRIVE_RL, msg->rl ? msg->l : 0.0f));
   motor_pub.publish(create_motor_msg(DRIVE_FR, msg->fr ? msg->r : 0.0f));

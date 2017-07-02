@@ -20,12 +20,12 @@ daybreak_2k17::MotorOutputMsg create_motor_msg(const unsigned int motorId, const
 }
 
 void bin_slide_callback(const daybreak_2k17::BinSlideMsg::ConstPtr& msg) {
-  ROS_INFO("Received bin slide packet: speed %f", msg->movement);
+  ROS_INFO("Received bin slide message: speed %f", msg->movement);
   motor_pub.publish(create_motor_msg(BIN_SLIDE, msg->movement));
 }
 
 void belt_spin_callback(const daybreak_2k17::BeltSpinMsg::ConstPtr& msg) {
-  ROS_INFO("Received belt spin packet: speed %f", msg->movement);
+  ROS_INFO("Received belt spin message: speed %f", msg->movement);
   motor_pub.publish(create_motor_msg(BELT_SPIN, msg->movement));
 }
 
