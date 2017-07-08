@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   ${SFML_LIBRARIES}
   message_generation
+  bondcpp
 )
 find_package( OpenCV REQUIRED )
 find_package( SFML 2 REQUIRED network graphics window system )
