@@ -243,10 +243,6 @@ int main(int argc, char **argv)
   image_transport::ImageTransport it(nh);
   image_transport::Subscriber sub = it.subscribe("camera/netimg", 1, imageCallback);
 
-  bond::Bond bond("driver_station_bond", "uniqueBondId13579");
-  bond.setHeartbeatPeriod(0.5);
-  bond.start();
-
   ROS_DEBUG("Initializing SFML window");
 
   RenderWindow window(sf::VideoMode(800, 600), "TrickFire Driver Station");
@@ -281,5 +277,4 @@ int main(int argc, char **argv)
   }
 
   ROS_INFO("Driver station stopping...");
-  bond.breakBond();
 }

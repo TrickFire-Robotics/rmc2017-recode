@@ -21,6 +21,7 @@ int pwmFD;
 // TODO: Check how much data this uses and see if there's a better way
 // TODO: A smart pointer would be much better here for null checks
 bond::Bond *ds_bond = nullptr;
+bool isConnected = false;
 
 unsigned int map_to_motor(const float val) {
   return (unsigned int)(122.85 * val + 322.125);
@@ -29,8 +30,8 @@ unsigned int map_to_motor(const float val) {
 void motor_output_callback(const daybreak_2k17::MotorOutputMsg::ConstPtr& msg) {
   ROS_DEBUG("Received motor output message: motor %d to val %f", msg->motorId, msg->val);
 
-  if (ds_bond != nullptr && ds_bond->isBroken()) {
-    ROS_DEBUG("Driver station bond broken, ignoring motor output");
+  if (!isConnected) {
+    ROS_DEBUG("Driver station not connected, ignoring motor output");
     return;
   }
 
@@ -39,12 +40,16 @@ void motor_output_callback(const daybreak_2k17::MotorOutputMsg::ConstPtr& msg) {
 #endif
 }
 
-void bond_broken_callback() {
-  ROS_INFO("Driver station bond broken, all outputs set to neutral.");
-
-#if defined(GPIO)
-  pwmWrite(316, map_to_motor(0.0f));
-#endif
+bool is_driver_station_connected() {
+  std::vector< std::string> nodes;
+  ros::master::getNodes(nodes);
+  for (std::vector<std::string>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+    if (*it == "/DriverStation") {
+      return true;
+      break;
+    }
+  }
+  return false;
 }
 
 int main(int argc, char **argv)
@@ -73,29 +78,24 @@ int main(int argc, char **argv)
     ROS_INFO("GPIO is not enabled, no physical outputs will be sent by this node.");
   #endif
 
-  // Bond-unbond loop
+  // Connect-disconnect loop
   do {
-    // Set up the bond
-    bond::Bond _bond("driver_station_bond", "uniqueBondId13579");
-    ds_bond = &_bond;
-    ds_bond->setBrokenCallback(bond_broken_callback);
-    ds_bond->setHeartbeatTimeout(1.0);
-    ds_bond->start();
+    // TODO: If ROS stops this *will* crash. Doesn't affect operation much if at all, but it's not clean
+    ROS_INFO("Waiting for driver station to start...");
+    do {
+      isConnected = is_driver_station_connected();
+      if (isConnected) break;
+      ros::Duration(0.5).sleep();
+    } while (!isConnected);
+    ROS_INFO("Driver station connected");
 
-    ROS_INFO("Waiting for driver station bond to form...");
-    if (!ds_bond->waitUntilFormed(ros::Duration(-1))) {
-      ROS_FATAL("Driver station bond not formed, quitting!");
-      return 1;
+    while (ros::ok() && (isConnected = is_driver_station_connected())) {
+      // wait until either the node stops or the driver station stops
+      ros::Duration(0.5).sleep();
     }
-    ROS_INFO("Driver station bond formed!");
-    while (ros::ok() && !ds_bond->isBroken()); // wait until either the node stops or the bond breaks
-
-    if (!ds_bond->isBroken()) {
-      // It wasn't the bond breaking, it was ROS stopping, break the bond
-      ds_bond->breakBond();
+    if (!isConnected) {
+      ROS_INFO("Driver station disconnected");
     }
-    // Either way, get rid of the pointer
-    ds_bond = nullptr;
   } while (ros::ok());
 
   ROS_INFO("Motor output stopping...");
