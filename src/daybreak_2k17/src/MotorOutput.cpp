@@ -86,7 +86,10 @@ int main(int argc, char **argv)
       isConnected = is_driver_station_connected();
       if (isConnected) break;
       ros::Duration(0.5).sleep();
-    } while (!isConnected);
+    } while (!isConnected && ros::ok());
+
+    if (!ros::ok()) break;
+
     ROS_INFO("Driver station connected");
 
     while (ros::ok() && (isConnected = is_driver_station_connected())) {
@@ -99,6 +102,9 @@ int main(int argc, char **argv)
   } while (ros::ok());
 
   ROS_INFO("Motor output stopping...");
+  #if defined(GPIO)
+  close(pwmFD);
+  #endif
 
   return 0;
 }

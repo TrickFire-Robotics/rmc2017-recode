@@ -13,6 +13,7 @@
 #include <daybreak_2k17/BeltSpinMsg.h>
 #include <daybreak_2k17/MinerSpinMsg.h>
 #include <daybreak_2k17/LiftMoveMsg.h>
+#include <daybreak_2k17/GetDownscaledImage.h>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -29,6 +30,7 @@ ros::Publisher drive_pub;
 ros::Publisher bin_slide_pub;
 ros::Publisher belt_spin_pub;
 ros::Publisher miner_spin_pub;
+ros::ServiceClient downres_image_client;
 
 bool prevKeys[255];
 bool currKeys[255];
@@ -43,14 +45,20 @@ sf::Image camImg;
 sf::Texture camTex;
 sf::Sprite camSprite;
 
-void imageCallback(const sensor_msgs::ImageConstPtr& msg) {
-  sf::Lock lock(mut_camera);
-  cv::cvtColor(cv_bridge::toCvShare(msg, "bgr8")->image, camMat, cv::COLOR_BGR2RGBA);
-  camImg.create(camMat.cols, camMat.rows, camMat.ptr());
-  if (!camTex.loadFromImage(camImg)) {
-    ROS_ERROR("Could not convert camera image into texture.");
+void getCameraImage() {
+  daybreak_2k17::GetDownscaledImage srv;
+  srv.request.scale = 0.75;
+  if  (downres_image_client.call(srv)) {
+    sf::Lock lock(mut_camera);
+    cv::cvtColor(cv_bridge::toCvShare((sensor_msgs::Image) srv.response.img, nullptr, "bgr8")->image, camMat, cv::COLOR_BGR2RGBA);
+    camImg.create(camMat.cols, camMat.rows, camMat.ptr());
+    if (!camTex.loadFromImage(camImg)) {
+      ROS_ERROR("Could not convert camera image into texture.");
+    }
+    camSprite.setTexture(camTex);
+  } else {
+    ROS_DEBUG("Failed to get camera image.");
   }
-  camSprite.setTexture(camTex);
 }
 
 daybreak_2k17::TankDriveMsg generateDriveMsg(const float l, const float r, const bool fl, const bool rl, const bool fr, const bool rr) {
@@ -239,9 +247,9 @@ int main(int argc, char **argv)
   belt_spin_pub = nh.advertise<daybreak_2k17::BeltSpinMsg>("belt_spin", 1);
   miner_spin_pub = nh.advertise<daybreak_2k17::MinerSpinMsg>("miner_spin", 1);
 
+  downres_image_client = nh.serviceClient<daybreak_2k17::GetDownscaledImage>("get_downscaled_image");
+
   ROS_INFO("Driver station starting...");
-  image_transport::ImageTransport it(nh);
-  image_transport::Subscriber sub = it.subscribe("camera/netimg", 1, imageCallback);
 
   ROS_DEBUG("Initializing SFML window");
 
@@ -267,6 +275,7 @@ int main(int argc, char **argv)
 
     window.clear(Color::Black);
 
+    getCameraImage();
     mut_camera.lock();
     window.draw(camSprite);
     mut_camera.unlock();

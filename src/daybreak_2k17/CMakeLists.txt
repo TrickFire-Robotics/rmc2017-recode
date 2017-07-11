@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   ${OpenCV_LIBRARIES}
   cv_bridge
   image_transport
+  sensor_msgs
   ${SFML_LIBRARIES}
   message_generation
 )
@@ -71,11 +72,10 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  GetDownscaledImage.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -88,6 +88,7 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  sensor_msgs
 )
 
 ################################################
@@ -254,10 +255,6 @@ add_dependencies(motorout daybreak_2k17_generate_messages_cpp)
 add_executable(camera src/Camera.cpp)
 target_link_libraries(camera ${catkin_LIBRARIES})
 target_link_libraries(camera ${OpenCV_LIBRARIES})
+target_link_libraries(camera ${SFML_LIBRARIES})
 add_dependencies(camera daybreak_2k17_generate_messages_cpp)
-
-add_executable(camtonet src/CameraToNetwork.cpp)
-target_link_libraries(camtonet ${catkin_LIBRARIES})
-target_link_libraries(camtonet ${OpenCV_LIBRARIES})
-add_dependencies(camtonet daybreak_2k17_generate_messages_cpp)
 
